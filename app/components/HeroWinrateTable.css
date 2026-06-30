@@ -1,0 +1,46 @@
+.hero-table {
+  width: 100%;
+  max-width: 800px;
+  border-collapse: collapse;
+  font-family: system-ui, sans-serif;
+  margin-top: 1rem;
+}
+
+.hero-table th,
+.hero-table td {
+  padding: 0.6rem 1rem;
+  text-align: left;
+}
+
+.hero-table th {
+  background: #1a1a1a;
+  color: #f0c419; /* gold accent, deadlock-ish */
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 2px solid #333;
+}
+
+.hero-table th:hover {
+  background: #2a2a2a;
+}
+
+.hero-table tbody tr {
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.hero-table tbody tr:nth-child(even) {
+  background: #161616;
+}
+
+.hero-table tbody tr:hover {
+  background: #252525;
+}
+
+.hero-table td {
+  color: #e0e0e0;
+}
+
+.status-text {
+  font-family: system-ui, sans-serif;
+  color: #aaa;
+}
