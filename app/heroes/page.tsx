@@ -1,4 +1,4 @@
-import HeroWinrateTable from "@/app/components/HeroWinrateTable";
+import HeroWinrateTable from "@/app/components/heroWinrateTable";
 
 export default function HeroesPage() {
   return (

@@ -14,22 +14,27 @@ export async function GET() {
       fetch("https://api.deadlock-api.com/v1/assets/heroes"),
     ]);
 
-    if (!statsRes.ok) throw new Error(`Stats upstream error: ${statsRes.status}`);
-    if (!heroesRes.ok) throw new Error(`Heroes upstream error: ${heroesRes.status}`);
+    if (!statsRes.ok)
+      throw new Error(`Stats upstream error: ${statsRes.status}`);
+    if (!heroesRes.ok)
+      throw new Error(`Heroes upstream error: ${heroesRes.status}`);
 
     const stats = await statsRes.json();
     const heroesMeta = await heroesRes.json();
 
-    // TEMP: log one hero's metadata so we can see the real field names
-    console.log(JSON.stringify(heroesMeta[0], null, 2));
+    // log debug here
 
-    const totalMatchesAllHeroes = stats.reduce((sum: number, h: any) => sum + h.matches, 0);
+    const totalMatchesAllHeroes = stats.reduce(
+      (sum: number, h: any) => sum + h.matches,
+      0,
+    );
 
     const simplified = stats.map((hero: any) => {
       const meta = heroesMeta.find((h: any) => h.id === hero.hero_id);
       return {
         id: hero.hero_id,
         name: meta?.name ?? `Hero ${hero.hero_id}`,
+        icon: meta?.images?.icon_image_small ?? null,
         winRate: hero.wins / hero.matches,
         pickRate: hero.matches / totalMatchesAllHeroes,
         matches: hero.matches,
@@ -40,6 +45,9 @@ export async function GET() {
     return NextResponse.json(simplified);
   } catch (err) {
     console.error("Failed to fetch hero data:", err);
-    return NextResponse.json({ error: "Failed to fetch hero data" }, { status: 502 });
+    return NextResponse.json(
+      { error: "Failed to fetch hero data" },
+      { status: 502 },
+    );
   }
 }

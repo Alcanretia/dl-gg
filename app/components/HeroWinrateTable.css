@@ -44,3 +44,25 @@
   font-family: system-ui, sans-serif;
   color: #aaa;
 }
+
+.hero-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hero-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.clickable-row:hover {
+  cursor: pointer;
+}
+
+.hero-name-cell a {
+  color: inherit;
+  text-decoration: none;
+}

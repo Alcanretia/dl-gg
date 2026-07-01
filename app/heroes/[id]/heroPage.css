@@ -1,0 +1,147 @@
+.hero-page {
+  padding: 2rem;
+  font-family: system-ui, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.back-link {
+  color: #f0c419;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.page-subtitle {
+  color: #888;
+  margin-top: 0.25rem;
+  margin-bottom: 2rem;
+}
+
+.tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.tier-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.tier-label {
+  display: flex;
+  flex-direction: column;
+  min-width: 90px;
+  padding-top: 0.5rem;
+}
+
+.tier-cost {
+  font-weight: bold;
+  color: #f0c419;
+  font-size: 0.95rem;
+}
+
+.tier-count {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.tier-items {
+  display: grid;
+  grid-template-columns: repeat(6, 120px);
+  gap: 0.75rem;
+}
+
+.item-card {
+  background: #1a1a1a;
+  border-radius: 6px;
+  padding: 0.6rem;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.item-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.item-name {
+  font-size: 0.75rem;
+  color: #e0e0e0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.item-stat {
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
+.item-timing {
+  font-size: 0.65rem;
+  color: #666;
+  text-align: center;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.sort-label {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.sort-btn {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #aaa;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.sort-btn:hover {
+  border-color: #f0c419;
+  color: #f0c419;
+}
+
+.sort-btn.active {
+  background: #f0c419;
+  border-color: #f0c419;
+  color: #000;
+  font-weight: bold;
+}
+
+.type-filter {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #aaa;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.type-filter:hover {
+  border-color: #f0c419;
+  color: #f0c419;
+}
+
+.type-filter:focus {
+  outline: none;
+  border-color: #f0c419;
+}

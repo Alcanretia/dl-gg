@@ -1,11 +1,13 @@
 "use client";
 
-import "./HeroWinrateTable.css";
+import "./heroWinrateTable.css";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type Hero = {
   id: string;
   name: string;
+  icon: string | null;
   winRate: number;
   pickRate: number;
   matches: number;
@@ -67,8 +69,17 @@ export default function HeroWinrateTable() {
       </thead>
       <tbody>
         {sortedHeroes.map((h) => (
-          <tr key={h.id}>
-            <td>{h.name}</td>
+          <tr key={h.id} className="clickable-row">
+            <td>
+              <Link href={`/heroes/${h.id}`}>
+                <div className="hero-name-cell">
+                  {h.icon && (
+                    <img src={h.icon} alt={h.name} className="hero-icon" />
+                  )}
+                  {h.name}
+                </div>
+              </Link>
+            </td>
             <td>{(h.winRate * 100).toFixed(1)}%</td>
             <td>{(h.pickRate * 100).toFixed(1)}%</td>
             <td>{h.matches.toLocaleString()}</td>
