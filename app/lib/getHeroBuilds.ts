@@ -23,8 +23,14 @@ export type BuildData = {
 
 export async function getHeroBuilds(heroId: string): Promise<BuildData> {
   const [itemStatsRes, itemMetaRes] = await Promise.all([
-    fetch(`https://api.deadlock-api.com/v1/analytics/item-stats?hero_id=${heroId}`),
-    fetch(`https://api.deadlock-api.com/v1/assets/items`),
+    fetch(
+      `https://api.deadlock-api.com/v1/analytics/item-stats?hero_id=${heroId}`,
+      { next: { revalidate: 300 } }, // cache for 5 minutes
+    ),
+    fetch(
+      `https://api.deadlock-api.com/v1/assets/items`,
+      { next: { revalidate: 3600 } }, // cache for 1 hour — item metadata rarely changes
+    ),
   ]);
 
   const itemStats = await itemStatsRes.json();
