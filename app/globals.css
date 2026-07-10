@@ -40,3 +40,17 @@ body {
 .page-content {
   min-height: calc(100vh - 56px);
 }
+
+body {
+  background: #0d0d0d;
+  color: #e0e0e0;
+  font-family: system-ui, sans-serif;
+  /* background image with dark tint on top */
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+    url("/dl-background.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* stays in place while scrolling */
+  background-repeat: no-repeat;
+}
