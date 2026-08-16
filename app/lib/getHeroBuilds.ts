@@ -14,18 +14,25 @@ export type BuildItem = {
   cost: number;
   winRate: number;
   matches: number;
-  avgBuyTimeRelative: number; // 0-100, % through game
+  avgBuyTimeRelative: number;
+  avgBuyTimeS: number;
 };
+
+
+function twoWeeksAgoTimestamp(): number {
+  return Math.floor((Date.now() - 14 * 24 * 60 * 60 * 1000) / 1000);
+}
 
 export type BuildData = {
   byTier: Record<number, BuildItem[]>; // 1,2,3,4
 };
 
 export async function getHeroBuilds(heroId: string): Promise<BuildData> {
+  const minTs = twoWeeksAgoTimestamp();
   const [itemStatsRes, itemMetaRes] = await Promise.all([
     fetch(
-      `https://api.deadlock-api.com/v1/analytics/item-stats?hero_id=${heroId}`,
-      { next: { revalidate: 300 } }, // cache for 5 minutes
+      `https://api.deadlock-api.com/v1/analytics/item-stats?hero_id=${heroId}&min_unix_timestamp=${minTs}`,
+      { cache: "no-store" }
     ),
     fetch(
       `https://api.deadlock-api.com/v1/assets/items`,
@@ -58,6 +65,7 @@ export async function getHeroBuilds(heroId: string): Promise<BuildData> {
         winRate: stat.wins / stat.matches,
         matches: stat.matches,
         avgBuyTimeRelative: stat.avg_buy_time_relative ?? 0,
+        avgBuyTimeS: stat.avg_buy_time_s ?? 0,
       };
     })
     .filter(Boolean);

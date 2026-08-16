@@ -53,7 +53,7 @@
 
 .tier-items {
   display: grid;
-  grid-template-columns: repeat(6, 120px);
+  grid-template-columns: repeat(8, 120px);
   gap: 0.75rem;
 }
 
@@ -144,4 +144,124 @@
 .type-filter:focus {
   outline: none;
   border-color: #f0c419;
+}
+
+/* Chart */
+.build-timing-chart {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chart-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.chart-subtitle {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Tooltip */
+.chart-tooltip {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  max-width: 220px;
+}
+
+.tooltip-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.tooltip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tooltip-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tooltip-label {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.tooltip-value {
+  font-size: 0.75rem;
+  color: #ccc;
+}
+
+.tooltip-type {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.2rem;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.chart-reset-btn {
+  background: #1a1a1a;
+  border: 1px solid #f0c419;
+  color: #f0c419;
+  padding: 0.35rem 0.9rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.chart-reset-btn:hover {
+  background: #f0c419;
+  color: #000;
 }

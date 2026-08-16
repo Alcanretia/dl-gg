@@ -4,6 +4,10 @@ import { NextResponse } from "next/server";
 const cache = new Map<string, { data: any; expires: number }>();
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
+function twoWeeksAgoTimestamp(): number {
+  return Math.floor((Date.now() - 14 * 24 * 60 * 60 * 1000) / 1000);
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const minBadge = searchParams.get("minBadge") ?? "0";
@@ -14,11 +18,16 @@ export async function GET(request: Request) {
     return NextResponse.json(cached.data);
   }
 
+  const minTs = twoWeeksAgoTimestamp();
+  const params = new URLSearchParams();
+  if (minBadge !== "0") params.set("min_average_badge", minBadge);
+  params.set("min_unix_timestamp", minTs.toString());
+
   try {
     const [statsRes, heroesRes] = await Promise.all([
       fetch(
-        `https://api.deadlock-api.com/v1/analytics/hero-stats${minBadge !== "0" ? `?min_average_badge=${minBadge}` : ""}`,
-        { next: { revalidate: 300 } }
+        `https://api.deadlock-api.com/v1/analytics/hero-stats?${params.toString()}`,
+        { cache: "no-store" }
       ),
       fetch(
         `https://api.deadlock-api.com/v1/assets/heroes`,

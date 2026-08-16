@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { BuildItem } from "@/app/lib/getHeroBuilds";
+import BuildTimingChart from "./BuildTimingChart";
 
 type SortKey = "matches" | "winRate" | "score";
 
@@ -13,10 +14,10 @@ const TIER_LABELS: Record<number, string> = {
 };
 
 const TIER_SLOTS: Record<number, number> = {
-  1: 6,
-  2: 6,
-  3: 12,
-  4: 12,
+  1: 8,
+  2: 8,
+  3: 16,
+  4: 16,
 };
 
 const TYPE_COLORS: Record<string, string> = {
@@ -116,6 +117,7 @@ export default function BuildsDisplay({
 
   return (
     <div>
+      <BuildTimingChart byTier={byTier} />
       <div className="sort-controls">
         <span className="sort-label">Sort by:</span>
         <button
