@@ -46,3 +46,61 @@
   color: #f0c419;
   background: #1e1e1e;
 }
+
+.topbar-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  margin-left: auto;
+}
+
+.topbar-mobile-menu {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  right: 0;
+  background: #111;
+  border-bottom: 1px solid #222;
+  display: flex;
+  flex-direction: column;
+  z-index: 99;
+}
+
+.topbar-mobile-link {
+  color: #aaa;
+  text-decoration: none;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  font-size: 0.95rem;
+  transition: color 0.15s, background 0.15s;
+}
+
+.topbar-mobile-link:hover {
+  color: #fff;
+  background: #1a1a1a;
+}
+
+.topbar-mobile-link.active {
+  color: #f0c419;
+}
+
+@media (max-width: 768px) {
+  .topbar-links {
+    display: none;
+  }
+
+  .topbar-hamburger {
+    display: block;
+  }
+
+  /* make topbar position relative so dropdown anchors to it */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+}

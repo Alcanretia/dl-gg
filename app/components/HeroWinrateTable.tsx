@@ -16,17 +16,17 @@ type Hero = {
 };
 
 const RANKS = [
-  { label: "All Ranks", minBadge: 0 },
-  { label: "Seeker+", minBadge: 21 },
-  { label: "Alchemist+", minBadge: 31 },
-  { label: "Arcanist+", minBadge: 41 },
-  { label: "Ritualist+", minBadge: 51 },
-  { label: "Emissary+", minBadge: 61 },
-  { label: "Archon+", minBadge: 71 },
-  { label: "Oracle+", minBadge: 81 },
-  { label: "Phantom+", minBadge: 91 },
-  { label: "Ascendant+", minBadge: 101 },
-  { label: "Eternus", minBadge: 111 },
+  { label: "All Ranks",   minBadge: 0   },
+  { label: "Seeker+",     minBadge: 21  },
+  { label: "Acolyte+",    minBadge: 31  },
+  { label: "Sentinel+",   minBadge: 41  },
+  { label: "Mystic+",     minBadge: 51  },
+  { label: "Ritualist+",  minBadge: 61  },
+  { label: "Emissary+",   minBadge: 71  },
+  { label: "Oracle+",     minBadge: 81  },
+  { label: "Phantom+",    minBadge: 91  },
+  { label: "Ascendant+",  minBadge: 101 },
+  { label: "Eternus",     minBadge: 111 },
 ];
 
 const TIER_COLORS: Record<string, string> = {

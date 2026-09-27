@@ -1,7 +1,23 @@
 import "./playerPage.css";
+import MatchTable from "./MatchTable";
+
+const TIER_NAMES = [
+  "Initiate",  // 1
+  "Seeker",    // 2
+  "Acolyte",   // 3
+  "Sentinel",  // 4
+  "Mystic",    // 5
+  "Ritualist", // 6
+  "Emissary",  // 7
+  "Oracle",    // 8
+  "Phantom",   // 9
+  "Ascendant", // 10
+  "Eternus",   // 11
+];
+
 
 async function getPlayerData(steamId: string) {
-  const [historyRes, heroMetaRes, profileRes] = await Promise.all([
+  const [historyRes, heroMetaRes, profileRes, rankRes] = await Promise.all([
     fetch(`https://api.deadlock-api.com/v1/players/${steamId}/match-history`, {
       next: { revalidate: 120 },
     }),
@@ -12,19 +28,34 @@ async function getPlayerData(steamId: string) {
       `https://api.deadlock-api.com/v1/players/steam?account_ids=${steamId}`,
       { next: { revalidate: 300 } },
     ),
+    fetch(
+      `https://api.deadlock-api.com/v1/players/${steamId}/rank`,
+      { next: { revalidate: 300 } }
+    ),
   ]);
 
   if (!historyRes.ok) return null;
 
-  const history = await historyRes.json();
+  const history = (await historyRes.json()).filter(
+    (m: any) => m.match_id != null && m.hero_id != null && m.match_duration_s != null
+  );
   const heroMeta = await heroMetaRes.json();
   const profileArr = profileRes.ok ? await profileRes.json() : [];
   const profile = profileArr[0] ?? null;
+  const rankData = rankRes.ok ? await rankRes.json() : null;
+
+  const rank = rankData ? {
+    tier: rankData.rank,
+    subrank: rankData.subrank,
+    name: `${TIER_NAMES[(rankData.rank ?? 1) - 1] ?? "Unknown"} ${rankData.subrank}`,
+    badge: `https://assets.deadlock-api.com/images/ranks/rank${rankData.rank}/badge_lg_subrank${rankData.subrank}.webp`,
+  } : null;
+
 
   const heroMap = new Map<number, any>();
   for (const hero of heroMeta) heroMap.set(hero.id, hero);
 
-  return { history, heroMap, profile };
+  return { history, heroMap, profile, rank };
 }
 
 function formatDuration(seconds: number) {
@@ -90,7 +121,7 @@ export default async function PlayerPage({
     );
   }
 
-  const { history, heroMap, profile } = data;
+  const { history, heroMap, profile, rank } = data;
   const stats = calcSummaryStats(history);
   const mostPlayedHero = heroMap.get(stats.mostPlayedId);
 
@@ -102,31 +133,43 @@ export default async function PlayerPage({
 
       <div className="player-header">
         <div className="player-profile">
-            {profile?.avatarmedium && (
+          {profile?.avatarmedium && (
             <img
-                src={profile.avatarmedium}
-                alt={profile.personaname}
-                className="player-avatar"
+              src={profile.avatarmedium}
+              alt={profile.personaname}
+              className="player-avatar"
             />
-            )}
-            <div>
+          )}
+          <div>
             <h1 className="player-title">
-                {profile?.personaname ?? `Player ${steamId}`}
+              {profile?.personaname ?? `Player ${steamId}`}
             </h1>
+            <div className="player-rank-row">
+              {rank && (
+                <>
+                  <img
+                    src={rank.badge}
+                    alt={rank.name}
+                    className="player-rank-badge"
+                  />
+                  <span className="player-rank-name">{rank.name}</span>
+                </>
+              )}
+            </div>
             <p className="player-subtitle">{stats.total} recent matches</p>
-            {profile?.profileurl && (<a
-                
+            {profile?.profileurl && (
+              <a
                 href={profile.profileurl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="steam-link"
-                >
+              >
                 View Steam Profile ↗
-                </a>
+              </a>
             )}
-            </div>
+          </div>
         </div>
-        </div>
+      </div>
 
       {/* Summary Stats */}
       <div className="summary-cards">
@@ -176,59 +219,7 @@ export default async function PlayerPage({
 
       {/* Match History Table */}
       <h2 className="section-title">Recent Matches</h2>
-      <table className="match-table">
-        <thead>
-          <tr>
-            <th>Hero</th>
-            <th>Result</th>
-            <th>KDA</th>
-            <th>Last Hits</th>
-            <th>Net Worth</th>
-            <th>Duration</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {history.map((match: any) => {
-            const hero = heroMap.get(match.hero_id);
-            const won = match.match_result === match.player_team;
-            const duration = formatDuration(match.match_duration_s);
-            const date = formatDate(match.start_time);
-
-            return (
-              <tr
-                key={match.match_id}
-                className={`match-row ${won ? "win" : "loss"}`}>
-                <td>
-                  <div className="match-hero">
-                    {hero?.images?.icon_image_small && (
-                      <img
-                        src={hero.images.icon_image_small}
-                        alt={hero.name}
-                        className="match-hero-icon"
-                      />
-                    )}
-                    <span>{hero?.name ?? `Hero ${match.hero_id}`}</span>
-                  </div>
-                </td>
-                <td>
-                  <span className={`result-badge ${won ? "win" : "loss"}`}>
-                    {won ? "WIN" : "LOSS"}
-                  </span>
-                </td>
-                <td className="kda">
-                  {match.player_kills}/{match.player_deaths}/
-                  {match.player_assists}
-                </td>
-                <td>{match.last_hits}</td>
-                <td>{match.net_worth.toLocaleString()}</td>
-                <td>{duration}</td>
-                <td className="match-date">{date}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <MatchTable history={history} heroMap={Object.fromEntries(heroMap)} />
     </main>
   );
 }

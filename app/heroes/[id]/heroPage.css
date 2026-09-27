@@ -265,3 +265,28 @@
   background: #f0c419;
   color: #000;
 }
+
+@media (max-width: 768px) {
+  .tier-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .tier-items {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .item-card {
+    width: 100%;
+  }
+
+  .sort-controls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .build-timing-chart {
+    display: none;
+  }
+}

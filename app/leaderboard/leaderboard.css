@@ -1,0 +1,162 @@
+.leaderboard-page {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.leaderboard-title {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.leaderboard-subtitle {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Region tabs */
+.region-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.region-tab {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #aaa;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s;
+}
+
+.region-tab:hover {
+  border-color: #f0c419;
+  color: #f0c419;
+}
+
+.region-tab.active {
+  background: #f0c419;
+  border-color: #f0c419;
+  color: #000;
+  font-weight: 700;
+}
+
+/* Table */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.leaderboard-table th {
+  text-align: left;
+  padding: 0.6rem 1rem;
+  color: #666;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #222;
+}
+
+.leaderboard-row {
+  border-bottom: 1px solid #1a1a1a;
+  transition: background 0.1s;
+}
+
+.leaderboard-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.leaderboard-row td {
+  padding: 0.65rem 1rem;
+}
+
+.position-number {
+  font-size: 1rem;
+  font-weight: 800;
+  min-width: 2rem;
+  display: inline-block;
+}
+
+/* Player cell */
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.leaderboard-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.player-link {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.player-link:hover {
+  color: #f0c419;
+}
+
+.player-name {
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+/* Top heroes */
+.top-heroes {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.hero-mini-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  transition: transform 0.1s;
+}
+
+.hero-mini-icon:hover {
+  transform: scale(1.2);
+}
+
+/* Status */
+.leaderboard-status {
+  color: #666;
+  text-align: center;
+  padding: 3rem;
+}
+
+.leaderboard-status.error {
+  color: #e74c3c;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .leaderboard-page {
+    padding: 1rem;
+  }
+
+  .heroes-col {
+    display: none;
+  }
+
+  .rank-name {
+    display: none;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-row td {
+    padding: 0.5rem 0.5rem;
+  }
+}

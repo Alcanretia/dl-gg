@@ -102,3 +102,28 @@
   opacity: 0.65;
   text-align: left;
 }
+
+@media (max-width: 768px) {
+  .home-actions {
+    width: 100%;
+  }
+
+  .home-btn {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .btn-sub {
+    display: none;
+  }
+
+  .btn-icon {
+    font-size: 1.5rem;
+  }
+
+  .btn-label {
+    font-size: 0.95rem;
+  }
+}

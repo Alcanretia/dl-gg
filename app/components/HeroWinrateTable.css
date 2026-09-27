@@ -133,3 +133,27 @@
   flex: 1;
   margin-bottom: 0;
 }
+
+@media (max-width: 768px) {
+  .hero-table {
+    font-size: 0.8rem;
+  }
+
+  .hero-name-cell span {
+    display: none; /* hide text, keep icon */
+  }
+
+  .hero-table th,
+  .hero-table td {
+    padding: 0.5rem 0.4rem;
+  }
+
+  .table-controls {
+    flex-direction: column;
+  }
+
+  .rank-filter,
+  .hero-search-bar {
+    width: 100%;
+  }
+}
