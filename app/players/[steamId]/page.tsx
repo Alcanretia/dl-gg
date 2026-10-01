@@ -15,6 +15,29 @@ const TIER_NAMES = [
   "Eternus",   // 11
 ];
 
+function parseRank(data: any) {
+  let tier = Number(data?.rank ?? 0);
+  let subrank = Number(data?.subrank ?? 0);
+
+  // fallback: decode the combined badge value (e.g. 91 = tier 9, subrank 1)
+  if ((!tier || !subrank) && data?.badge) {
+    tier = Math.floor(data.badge / 10);
+    subrank = data.badge % 10;
+  }
+
+  const valid =
+    Number.isInteger(tier) && tier >= 1 && tier <= TIER_NAMES.length &&
+    Number.isInteger(subrank) && subrank >= 1 && subrank <= 6;
+  if (!valid) return null;
+
+  return {
+    tier,
+    subrank,
+    name: `${TIER_NAMES[tier - 1]} ${subrank}`,
+    badge: `https://assets.deadlock-api.com/images/ranks/rank${tier}/badge_lg_subrank${subrank}.webp`,
+  };
+}
+
 
 async function getPlayerData(steamId: string) {
   const [historyRes, heroMetaRes, profileRes, rankRes] = await Promise.all([
@@ -43,14 +66,7 @@ async function getPlayerData(steamId: string) {
   const profileArr = profileRes.ok ? await profileRes.json() : [];
   const profile = profileArr[0] ?? null;
   const rankData = rankRes.ok ? await rankRes.json() : null;
-
-  const rank = rankData ? {
-    tier: rankData.rank,
-    subrank: rankData.subrank,
-    name: `${TIER_NAMES[(rankData.rank ?? 1) - 1] ?? "Unknown"} ${rankData.subrank}`,
-    badge: `https://assets.deadlock-api.com/images/ranks/rank${rankData.rank}/badge_lg_subrank${rankData.subrank}.webp`,
-  } : null;
-
+  const rank = parseRank(rankData);
 
   const heroMap = new Map<number, any>();
   for (const hero of heroMeta) heroMap.set(hero.id, hero);
@@ -145,15 +161,13 @@ export default async function PlayerPage({
               {profile?.personaname ?? `Player ${steamId}`}
             </h1>
             <div className="player-rank-row">
-              {rank && (
+              {rank ? (
                 <>
-                  <img
-                    src={rank.badge}
-                    alt={rank.name}
-                    className="player-rank-badge"
-                  />
+                  <img src={rank.badge} alt={rank.name} className="player-rank-badge" />
                   <span className="player-rank-name">{rank.name}</span>
                 </>
+              ) : (
+                <span className="player-rank-name">Unranked</span>
               )}
             </div>
             <p className="player-subtitle">{stats.total} recent matches</p>
