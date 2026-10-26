@@ -221,3 +221,64 @@
   font-weight: 600;
   color: #f0c419;
 }
+
+/* ---------- Match rows: desktop vs mobile ---------- */
+
+/* mobile row is hidden by default, so desktop only sees the full row */
+.mobile-row {
+  display: none;
+}
+
+.mobile-match-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mobile-expand-hint {
+  margin-left: auto;
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.mobile-match-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #222;
+}
+
+.mobile-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.mobile-detail-label {
+  color: #666;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* swap which row is visible on small screens */
+@media (max-width: 768px) {
+  .desktop-row {
+    display: none;
+  }
+
+  .mobile-row {
+    display: table-row; /* a <tr> must use table-row, not block or flex */
+  }
+
+  /* column headers don't line up with the condensed row */
+  .match-table thead {
+    display: none;
+  }
+
+  .match-row td {
+    padding: 0.65rem 0.75rem;
+  }
+}

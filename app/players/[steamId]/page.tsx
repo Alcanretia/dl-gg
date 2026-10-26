@@ -1,95 +1,98 @@
 import "./playerPage.css";
 import MatchTable from "./MatchTable";
+import { parseRank } from "@/app/lib/ranks";
+import Link from "next/link";
 
-const TIER_NAMES = [
-  "Initiate",  // 1
-  "Seeker",    // 2
-  "Acolyte",   // 3
-  "Sentinel",  // 4
-  "Mystic",    // 5
-  "Ritualist", // 6
-  "Emissary",  // 7
-  "Oracle",    // 8
-  "Phantom",   // 9
-  "Ascendant", // 10
-  "Eternus",   // 11
-];
+type HeroLite = {
+  id: number;
+  name: string;
+  images: { icon_image_small?: string };
+};
 
-function parseRank(data: any) {
-  let tier = Number(data?.rank ?? 0);
-  let subrank = Number(data?.subrank ?? 0);
+// The full heroes response is ~2.5MB, over Next's 2MB fetch-cache limit,
+// so we cache a trimmed copy in memory ourselves.
+let heroCache: { data: Map<number, HeroLite>; expires: number } | null = null;
 
-  // fallback: decode the combined badge value (e.g. 91 = tier 9, subrank 1)
-  if ((!tier || !subrank) && data?.badge) {
-    tier = Math.floor(data.badge / 10);
-    subrank = data.badge % 10;
+async function getHeroLiteMap(): Promise<Map<number, HeroLite>> {
+  if (heroCache && heroCache.expires > Date.now()) return heroCache.data;
+
+  const res = await fetch("https://api.deadlock-api.com/v1/assets/heroes", {
+    cache: "no-store", // skip Next's cache; we handle caching here
+  });
+
+  // if upstream fails, fall back to stale data rather than breaking the page
+  if (!res.ok) return heroCache?.data ?? new Map();
+
+  const heroes = await res.json();
+  const map = new Map<number, HeroLite>();
+  for (const hero of heroes) {
+    map.set(hero.id, {
+      id: hero.id,
+      name: hero.name,
+      images: { icon_image_small: hero.images?.icon_image_small },
+    });
   }
 
-  const valid =
-    Number.isInteger(tier) && tier >= 1 && tier <= TIER_NAMES.length &&
-    Number.isInteger(subrank) && subrank >= 1 && subrank <= 6;
-  if (!valid) return null;
-
-  return {
-    tier,
-    subrank,
-    name: `${TIER_NAMES[tier - 1]} ${subrank}`,
-    badge: `https://assets.deadlock-api.com/images/ranks/rank${tier}/badge_lg_subrank${subrank}.webp`,
-  };
+  heroCache = { data: map, expires: Date.now() + 60 * 60 * 1000 };
+  return map;
 }
 
-
 async function getPlayerData(steamId: string) {
-  const [historyRes, heroMetaRes, profileRes, rankRes] = await Promise.all([
+  const [historyRes, allHeroes, profileRes, rankRes] = await Promise.all([
     fetch(`https://api.deadlock-api.com/v1/players/${steamId}/match-history`, {
       next: { revalidate: 120 },
     }),
-    fetch(`https://api.deadlock-api.com/v1/assets/heroes`, {
-      next: { revalidate: 3600 },
-    }),
+    getHeroLiteMap(),
     fetch(
       `https://api.deadlock-api.com/v1/players/steam?account_ids=${steamId}`,
       { next: { revalidate: 300 } },
     ),
-    fetch(
-      `https://api.deadlock-api.com/v1/players/${steamId}/rank`,
-      { next: { revalidate: 300 } }
-    ),
+    fetch(`https://api.deadlock-api.com/v1/players/${steamId}/rank`, {
+      next: { revalidate: 300 },
+    }),
   ]);
 
   if (!historyRes.ok) return null;
 
   const history = (await historyRes.json()).filter(
-    (m: any) => m.match_id != null && m.hero_id != null && m.match_duration_s != null
+    (m: any) =>
+      m.match_id != null && m.hero_id != null && m.match_duration_s != null,
   );
-  const heroMeta = await heroMetaRes.json();
+
+  // only send the heroes this player actually used to the client
+  const usedIds = new Set<number>(history.map((m: any) => m.hero_id));
+  const heroMap = new Map<number, HeroLite>();
+  for (const id of usedIds) {
+    const hero = allHeroes.get(id);
+    if (hero) heroMap.set(id, hero);
+  }
+
   const profileArr = profileRes.ok ? await profileRes.json() : [];
   const profile = profileArr[0] ?? null;
   const rankData = rankRes.ok ? await rankRes.json() : null;
   const rank = parseRank(rankData);
 
-  const heroMap = new Map<number, any>();
-  for (const hero of heroMeta) heroMap.set(hero.id, hero);
-
   return { history, heroMap, profile, rank };
-}
-
-function formatDuration(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
-function formatDate(unixTimestamp: number) {
-  return new Date(unixTimestamp * 1000).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 function calcSummaryStats(history: any[]) {
   const total = history.length;
+
+  // avoid NaN everywhere when there are no matches
+  if (total === 0) {
+    return {
+      total: 0,
+      wins: 0,
+      losses: 0,
+      winRate: 0,
+      avgKills: "0.0",
+      avgDeaths: "0.0",
+      avgAssists: "0.0",
+      mostPlayedId: -1,
+      mostPlayedCount: 0,
+    };
+  }
+
   const wins = history.filter((m) => m.match_result === m.player_team).length;
 
   // find most played hero
@@ -109,7 +112,7 @@ function calcSummaryStats(history: any[]) {
     total,
     wins,
     losses: total - wins,
-    winRate: total > 0 ? (wins / total) * 100 : 0,
+    winRate: (wins / total) * 100,
     avgKills: (totalKills / total).toFixed(1),
     avgDeaths: (totalDeaths / total).toFixed(1),
     avgAssists: (totalAssists / total).toFixed(1),
@@ -129,9 +132,9 @@ export default async function PlayerPage({
   if (!data) {
     return (
       <main className="player-page">
-        <a href="/players" className="back-link">
+        <Link href="/players" className="back-link">
           ← Back to Search
-        </a>
+        </Link>
         <p className="error-text">Player not found or API error.</p>
       </main>
     );
@@ -143,9 +146,9 @@ export default async function PlayerPage({
 
   return (
     <main className="player-page">
-      <a href="/players" className="back-link">
+      <Link href="/players" className="back-link">
         ← Back to Search
-      </a>
+      </Link>
 
       <div className="player-header">
         <div className="player-profile">
@@ -163,7 +166,11 @@ export default async function PlayerPage({
             <div className="player-rank-row">
               {rank ? (
                 <>
-                  <img src={rank.badge} alt={rank.name} className="player-rank-badge" />
+                  <img
+                    src={rank.badge}
+                    alt={rank.name}
+                    className="player-rank-badge"
+                  />
                   <span className="player-rank-name">{rank.name}</span>
                 </>
               ) : (
@@ -176,8 +183,7 @@ export default async function PlayerPage({
                 href={profile.profileurl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="steam-link"
-              >
+                className="steam-link">
                 View Steam Profile ↗
               </a>
             )}

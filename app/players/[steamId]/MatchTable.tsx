@@ -41,8 +41,7 @@ function MatchRow({ match, heroMap }: { match: Match; heroMap: HeroMap }) {
     <>
       {/* desktop row — full columns */}
       <tr
-        className={`match-row ${won ? "win" : "loss"} desktop-row`}
-        onClick={() => setExpanded(!expanded)}>
+        className={`match-row ${won ? "win" : "loss"} desktop-row`}>
         <td>
           <div className="match-hero">
             {hero?.images?.icon_image_small && (
