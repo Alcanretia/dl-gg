@@ -6,9 +6,10 @@ A Deadlock stats website inspired by [op.gg](https://op.gg), built with Next.js 
 
 ## Features
 
-- **Hero stats and tier rankings** – an overview of every hero, grouped into tiers based on their performance.
-- **Hero build pages** – item build data for each hero, shown in an interactive chart (scroll to zoom, drag to pan).
-- **Player match history** – search for a player and view their recent matches.
+- **Hero stats and tier rankings** – an overview of every hero with win rates, grouped into tiers based on performance.
+- **Hero build pages** – item build data for each hero, with an interactive build timing chart (scroll to zoom, drag to pan).
+- **Leaderboard** – regional leaderboards for ranked players.
+- **Player search and profiles** – search for a player by name or Steam ID and view their profile and match history.
 
 ## Tech Stack
 
@@ -62,13 +63,34 @@ npm start
 ## Project Structure
 
 ```
-src/
-├── app/          # App Router pages and API route handlers
-├── components/   # Reusable UI components
-└── ...
+dl-gg/
+├── app/
+│   ├── api/                      # Route handlers (proxy and cache deadlock-api)
+│   │   ├── heroes/
+│   │   │   ├── winrates/         # GET hero win rates
+│   │   │   └── [id]/builds/      # GET builds for a hero
+│   │   ├── leaderboard/[region]/ # GET leaderboard by region
+│   │   └── players/
+│   │       ├── search/           # GET player search
+│   │       └── [steamId]/        # GET player data and matches
+│   ├── components/               # Shared UI: topbar, spinner, hero win rate table
+│   ├── heroes/                   # Heroes list page
+│   │   └── [id]/                 # Hero page: builds display and BuildTimingChart
+│   ├── leaderboard/              # Leaderboard page and table
+│   ├── players/                  # Player search page
+│   │   └── [steamId]/            # Player page and MatchTable
+│   ├── lib/                      # Shared helpers (getHeroBuilds, ranks)
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx                  # Home page
+├── public/                       # Static assets
+├── next.config.ts
+├── tsconfig.json
+├── eslint.config.mjs
+└── package.json
 ```
 
-> Adjust the tree above to match your actual folder layout.
+Each route has a matching `loading.tsx`, so pages show a spinner while server-side data loads.
 
 ## Acknowledgements
 
